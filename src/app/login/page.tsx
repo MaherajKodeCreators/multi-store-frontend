@@ -63,7 +63,12 @@ export default function LoginPage() {
               error={errors.password?.message}
               {...register("password")}
             />
-            <Button type="submit" disabled={mutation.isPending} className="mt-4 h-11 w-full rounded-none">
+            <div className="-mt-1 text-right">
+              <Link href="/forgot-password" className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground">
+                Forgot password?
+              </Link>
+            </div>
+            <Button type="submit" disabled={mutation.isPending} className="h-11 w-full rounded-none">
               {mutation.isPending ? "Signing in..." : "Sign in"}
             </Button>
           </form>

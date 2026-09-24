@@ -44,7 +44,7 @@ function MyOrders() {
       ) : (
         <div className="flex flex-col gap-6">
           {query.data.map((o) => (
-            <OrderCard key={o.id} order={o} />
+            <OrderCard key={o.id} order={o} canReturn />
           ))}
         </div>
       )}

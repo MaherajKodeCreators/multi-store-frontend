@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeading } from "@/components/states";
 import { ResourceFormDialog } from "@/components/admin/resource-form-dialog";
 import { ResourceTable, StatusPill } from "@/components/admin/resource-table";
+import { ProductThumb } from "@/components/product-thumb";
 import { formatMoney, Product } from "@/lib/types";
 import { useResource } from "@/lib/use-resource";
 
@@ -15,6 +16,7 @@ const schema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   description: z.string().trim().optional(),
   price: z.number({ error: "Price is required" }).positive("Price must be greater than 0"),
+  images: z.array(z.string()).max(8).optional(),
   isActive: z.boolean(),
 });
 
@@ -41,9 +43,12 @@ export default function AdminProductsPage() {
           {
             header: "Product",
             cell: (p) => (
-              <div>
-                <p className="font-medium">{p.name}</p>
-                {p.description && <p className="text-xs text-muted-foreground">{p.description}</p>}
+              <div className="flex items-center gap-3">
+                <ProductThumb images={p.images} name={p.name} className="size-10 shrink-0 object-cover" />
+                <div>
+                  <p className="font-medium">{p.name}</p>
+                  {p.description && <p className="text-xs text-muted-foreground">{p.description}</p>}
+                </div>
               </div>
             ),
           },
@@ -65,13 +70,20 @@ export default function AdminProductsPage() {
         pending={save.isPending}
         defaultValues={
           editing
-            ? { name: editing.name, description: editing.description ?? "", price: Number(editing.price), isActive: editing.isActive }
-            : { name: "", description: "", isActive: true }
+            ? {
+                name: editing.name,
+                description: editing.description ?? "",
+                price: Number(editing.price),
+                images: editing.images,
+                isActive: editing.isActive,
+              }
+            : { name: "", description: "", images: [], isActive: true }
         }
         fields={[
           { name: "name", label: "Name" },
           { name: "description", label: "Description" },
           { name: "price", label: "Price (₹)", type: "number", step: "0.01" },
+          { name: "images", label: "Images", type: "images" },
           { name: "isActive", label: "Active (visible to customers)", type: "checkbox" },
         ]}
         onSubmit={(v) =>

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { RequireAuth } from "@/components/require-auth";
 import { EmptyState, ErrorState, PageHeading } from "@/components/states";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProductThumb } from "@/components/product-thumb";
 import { apiClient, getErrorMessage } from "@/lib/api-client";
 import { formatMoney, Order, Quote } from "@/lib/types";
 import { useCart } from "@/providers/cart-provider";
@@ -92,10 +93,13 @@ function Cart() {
             return (
               <li key={item.productId} className="flex flex-col gap-3 py-5">
                 <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="font-serif text-xl">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">{formatMoney(line?.unitPrice ?? item.price)} each</p>
-                  </div>
+                  <Link href={`/products/${item.productId}`} className="flex items-center gap-3">
+                    <ProductThumb images={item.image ? [item.image] : []} name={item.name} className="size-16 shrink-0 object-cover" />
+                    <div>
+                      <p className="font-serif text-xl">{item.name}</p>
+                      <p className="text-sm text-muted-foreground">{formatMoney(line?.unitPrice ?? item.price)} each</p>
+                    </div>
+                  </Link>
                   <button onClick={() => remove(item.productId)} aria-label={`Remove ${item.name}`} className="text-muted-foreground hover:text-foreground">
                     <X className="size-4" />
                   </button>

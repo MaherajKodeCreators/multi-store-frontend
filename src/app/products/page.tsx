@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Minus, Plus, Search } from "lucide-react";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, ErrorState, LoadingState, PageHeading } from "@/components/states";
+import { ProductThumb } from "@/components/product-thumb";
 import { apiClient, getErrorMessage } from "@/lib/api-client";
 import { formatMoney, Product } from "@/lib/types";
 import { useAuth } from "@/providers/auth-provider";
@@ -71,10 +73,12 @@ function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="group flex flex-col">
-      <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-secondary">
-        <span className="font-serif text-7xl text-foreground/15 italic transition-transform duration-500 group-hover:scale-110">
-          {product.name.charAt(0)}
-        </span>
+      <Link href={`/products/${product.id}`} className="relative flex aspect-[4/5] overflow-hidden bg-secondary">
+        <ProductThumb
+          images={product.images}
+          name={product.name}
+          className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
         {product.productDiscounts.length > 0 && (
           <Badge className="absolute top-3 left-3 rounded-none bg-accent text-[10px] uppercase tracking-wider text-accent-foreground">
             Bulk offer
@@ -85,10 +89,12 @@ function ProductCard({ product }: { product: Product }) {
             Sold out
           </span>
         )}
-      </div>
+      </Link>
 
       <div className="mt-4 flex flex-1 flex-col gap-1.5">
-        <h2 className="font-serif text-xl">{product.name}</h2>
+        <Link href={`/products/${product.id}`}>
+          <h2 className="font-serif text-xl hover:underline">{product.name}</h2>
+        </Link>
         {product.description && <p className="text-sm text-muted-foreground">{product.description}</p>}
         <p className="text-sm font-medium">{formatMoney(product.price)}</p>
         <p className="text-xs text-muted-foreground">{outOfStock ? "Out of stock" : `${product.availableQuantity} available`}</p>
@@ -133,7 +139,7 @@ function ProductCard({ product }: { product: Product }) {
               className="h-9 flex-1 rounded-none text-xs uppercase tracking-[0.15em]"
               disabled={outOfStock || maxAddable === 0}
               onClick={() => {
-                add({ productId: product.id, name: product.name, price: Number(product.price) }, qty);
+                add({ productId: product.id, name: product.name, price: Number(product.price), image: product.images[0] }, qty);
                 toast.success(`${qty} × ${product.name} added to cart`);
                 setQty(1);
               }}

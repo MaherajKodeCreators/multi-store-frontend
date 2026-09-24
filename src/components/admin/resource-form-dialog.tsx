@@ -2,18 +2,19 @@
 
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ImageManager } from "@/components/admin/image-manager";
 
 export interface FieldConfig {
   name: string;
   label: string;
-  type?: "text" | "number" | "select" | "checkbox";
+  type?: "text" | "number" | "select" | "checkbox" | "images";
   step?: string;
   options?: Array<{ value: string; label: string }>;
   disabledOnEdit?: boolean;
@@ -34,6 +35,7 @@ interface Props {
 export function ResourceFormDialog({ open, onOpenChange, title, schema, fields, defaultValues, isEdit, pending, onSubmit }: Props) {
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
@@ -60,6 +62,16 @@ export function ResourceFormDialog({ open, onOpenChange, title, schema, fields, 
                   <input type="checkbox" className="size-4 accent-primary" {...register(f.name)} />
                   {f.label}
                 </label>
+              );
+            }
+            if (f.type === "images") {
+              return (
+                <Controller
+                  key={f.name}
+                  name={f.name}
+                  control={control}
+                  render={({ field }) => <ImageManager value={field.value ?? []} onChange={field.onChange} />}
+                />
               );
             }
             return (

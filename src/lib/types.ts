@@ -31,9 +31,20 @@ export interface Product {
   name: string;
   description: string | null;
   price: Money;
+  images: string[];
   isActive: boolean;
   availableQuantity: number;
   productDiscounts: ProductDiscount[];
+}
+
+export interface ProductDetail extends Product {
+  stores: Array<{ id: string; name: string; address: string; quantity: number }>;
+}
+
+export function imageUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path;
+  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+  return apiBase.replace(/\/api\/?$/, "") + path;
 }
 
 export interface InventoryRow {
@@ -86,9 +97,16 @@ export interface Order {
     quantity: number;
     unitPrice: Money;
     lineTotal: Money;
-    product: { id: string; name: string };
+    returnedQuantity: number;
+    product: { id: string; name: string; images: string[] };
     allocations: Array<{ id: string; quantity: number; store: { id: string; name: string } }>;
+    returns: Array<{ id: string; quantity: number; createdAt: string; store: { id: string; name: string } }>;
   }>;
+}
+
+export interface ReturnItemInput {
+  orderItemId: string;
+  quantity: number;
 }
 
 export const formatMoney = (value: Money) =>
